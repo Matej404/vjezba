@@ -8,7 +8,8 @@ export default function Comment({ comment,
                                   activeComment,
                                   setActiveComment,
                                   addComment, 
-                                  parentId = null }) {
+                                  parentId = null,
+                                  updateComment }) {
     const fiveMinutes = 300000;
     const timePassed = new Date() - new Date(comment.createdAt) > fiveMinutes;
     const canReply = Boolean(currentUserId);
@@ -29,10 +30,13 @@ export default function Comment({ comment,
                     <div className="comment-author">{comment.username}</div>
                     <div>{createdAt}</div>
                 </div>
-                <div className="comment-text">{comment.body}</div>
+                {!isEditing &&<div className="comment-text">{comment.body}</div>}
+                {isEditing && (
+                    <CommentForm submitLable="Update" hasCancleButton initialtext={comment.body} handleSubmit={(text) => updateComment(text, comment.id)} handleCancle={() => setActiveComment(null)} />
+                )}
                 <div className="comment-actions">
                     {canReply && <div className="comment-action" onClick={() => setActiveComment({ id: comment.id, type: "replying" })}>Reply</div>}
-                    {canEdit && <div className="comment-action" onClick={() => setActiveComment({ id: comment.id, type: "replying"})}>Edit</div>}
+                    {canEdit && <div className="comment-action" onClick={() => setActiveComment({ id: comment.id, type: "editing"})}>Edit</div>}
                     {canDelete && <div className="comment-action" onClick={() => deleteComment(comment.id)}>Delete</div>}
                 </div>
                 {isReplying && (
@@ -50,6 +54,7 @@ export default function Comment({ comment,
                                      activeComment={activeComment}
                                      setActiveComment={setActiveComment}
                                      parentId={comment.id}
+                                     updateComment={updateComment}
                                      />
                         ))}
                     </div>
