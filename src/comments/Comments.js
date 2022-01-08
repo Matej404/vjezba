@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { getComments as getCommentsApi, createComment as createCommentApi } from "../api";
+import { getComments as getCommentsApi, createComment as createCommentApi, deleteComment as deleteCommentApi } from "../api";
 import Comment from './Comment';
 import CommentForm from "./CommentForm";
 
@@ -20,6 +20,16 @@ export default function Comments({ currentUserId }) {
         })
     }
 
+   const deleteComment = (commentId) => {
+       if (window.confirm("Are you sure?")) {
+           deleteCommentApi(commentId)
+           .then(() => {
+               const updateBackendComment = backendComments.filter(backendComment => backendComment.id !== commentId);
+               setBackendComments(updateBackendComment);
+           })
+       }
+   }
+
     useEffect(() => {
         getCommentsApi()
         .then((data) => {
@@ -34,7 +44,7 @@ export default function Comments({ currentUserId }) {
              <CommentForm submitLable="Write" handleSubmit={addComment} />
              <div className="comments-container">
                 {rootComments.map(rootComment => (
-                    <Comment key={rootComment.id} comment={rootComment} replies={getReplies(rootComment.id)} />
+                    <Comment key={rootComment.id} comment={rootComment} replies={getReplies(rootComment.id)} currentUserId={currentUserId} deleteComment={deleteComment} />
                 ))}
              </div>
          </div>
