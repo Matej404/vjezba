@@ -5,6 +5,7 @@ import CommentForm from "./CommentForm";
 
 export default function Comments({ currentUserId }) {
     const [backendComments, setBackendComments] = useState([]);
+    const [activeComment, setActiveComment] = useState(null);
     console.log('backendComments', backendComments);
     const rootComments = backendComments.filter(backendComment => backendComment.parentId === null);
 
@@ -17,6 +18,7 @@ export default function Comments({ currentUserId }) {
         createCommentApi(text, parentId)
         .then((comment) => {
             setBackendComments([comment, ...backendComments])
+            setActiveComment(null);
         })
     }
 
@@ -44,7 +46,15 @@ export default function Comments({ currentUserId }) {
              <CommentForm submitLable="Write" handleSubmit={addComment} />
              <div className="comments-container">
                 {rootComments.map(rootComment => (
-                    <Comment key={rootComment.id} comment={rootComment} replies={getReplies(rootComment.id)} currentUserId={currentUserId} deleteComment={deleteComment} />
+                    <Comment key={rootComment.id}
+                             comment={rootComment} 
+                             replies={getReplies(rootComment.id)} 
+                             currentUserId={currentUserId} 
+                             deleteComment={deleteComment} 
+                             activeComment={activeComment}
+                             setActiveComment={setActiveComment}
+                             addComment={addComment}
+                             />
                 ))}
              </div>
          </div>
